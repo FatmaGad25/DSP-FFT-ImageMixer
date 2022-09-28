@@ -68,6 +68,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         logger.info("Browsing image ...")
         self.fname=QtWidgets.QFileDialog.getOpenFileName(self,' Open File',os.getenv('home'),"jpg(*.jpg) ;; jpeg(*.jpeg) ")
         self.path=self.fname[0]
+        # Create an instance of the class input image to contain all the components of the input image
         self.imgdata = inputimg(self.path)
         self.img= cv2.imread(self.path,0)
         self.height, self.width = self.img.shape
@@ -77,6 +78,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             logger.info(" Browsed Successfully ! ")
 
     def opensignal(self ,num):
+        # The first image
         if num == 0:
             self.readsignal()
             self.paths.append(self.path)
@@ -86,8 +88,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.images[0].setImage((self.imgdata.img).T)
             self.ui.images[0].view.setAspectLocked(False)
             logger.info("Opened First image ...")
+        #  The second image
         if num == 1:
             self.readsignal()
+            # Error msg if shape is not identical
             if self.width != self.imgwidth[0] or self.height !=self.imgheight[0]:
                 QMessageBox.about(self,"Error !","Please Choose Another image with the same dimensions")
                 logger.warning("Opened Image with different dimensions ...")
@@ -103,6 +107,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     
 
     def Components(self,y):
+        # A function to display any component of any image.
         self.images[2+y%2].clear()
         self.path = self.paths[y%2]
         self.imgdata = inputimg(self.path)
@@ -122,16 +127,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             else: self.images[2+y%2].clear()
         self.images[2+y%2].setImage(x.T)
         self.images[2+y%2].view.setAspectLocked(False)
-        # for i in range (0,y+1):
-        #     n=self.img_combo[i].currentText().lower()
-        #     x=self.imgdata.n
-        # self.images[2+y%2].view.setRange(xRange=[0,self.imgheight[y%2]], yRange=[0,self.imgwidth[y%2]],padding=0)
 
 
     def mixer(self,z,flag):
-
+        # A function to mix 2 components of any of the two input images
+        
+        # Get the gain of each components from the sliders 
         gain1=self.ui.component1_slider.value()
         gain2=self.ui.component2_slider.value()
+
+        # The type of components to be mixed
         type1=self.types[0].currentText()
         type2= self.ui.component2_type.currentText()
         type22= self.ui.component2_type.currentText()
@@ -140,6 +145,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         opchannel=self.ui.output_channel.currentText()
 
         if (flag):
+            # a flag to restrict the components to be mixed together
             self.setcombotext(type1,type22)
 
 
@@ -150,6 +156,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.path2= self.paths[1]
             self.imgmix1= inputimg(self.path1)
             self.imgmix2= inputimg(self.path2)
+            # Determine the type of mixes
             if (type1=="Magnitude" and type2=="Phase") or (type2=="Magnitude" and type1=="Phase" ):
                 mode ="magphase"
             elif(type1=="Real" or type1=="Imaginary") and (type2=="Real" or type2=="Imaginary"):
